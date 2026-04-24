@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from scraper import get_psx_data, add_signals,get_stock_history,add_rsi,rsi_signal
 from flask_cors import CORS   # 👈 add this
+import os
 
 app = Flask(__name__)
 CORS(app)  # 👈 enable for all routes
@@ -59,4 +60,4 @@ def rsi(symbol):
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
