@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PSX Dashboard</title>
+  <style>
+    body {
+      background-color: #f1f1f1;
+    }
+    .header {
+      background-color: #009952;
+      color: #fff;
+       font-size: 1rem; 
+       display: flex;
+      line-height: 0;  
+      box-shadow: 4px 4px 4px rgba(0, 157, 73, .2);
+      z-index: 100;
+      border-radius: 4px;
+      padding: 0px 20px;
+    }
+    .main {
+      border: 1px solid #dbdbdb;
+      background-color: #fff;
+      margin-top: 1rem;
+      padding: 1rem;
+    }
+    button {
+      cursor: pointer;
+    }
+    table {
+      padding: 4px;
+    }
+    th {
+      padding: 4px;
+    }
+    td {
+      padding: 6px;
+    }
+  </style>
+</head>
+<body style="padding: 2rem;">
+  <div class="header"><h2>PSX Live Data!!</h2></div>
+<div class="main">
+  <div style="margin-bottom: 20px;">
+    <button class="all">ALL</button>
+    <button class="top-gainers">Top Gainers</button>
+    <button class="top-losers">Top Losers</button>
+    <button class="signal">Signal</button>
+  </div>
+  
+  <table border="1" id="table">
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Sector</th>
+        <!-- <th>List In</th> -->
+        <th>LDCP</th>
+        <th>Open</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Current</th>
+        <th>Change</th>
+        <th>Change %</th>
+        <th>Volume</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <label class="loader">loading...</label>
+</div>
+
+
+
+<script>
+    console.log("test")
+
+function renderingData(data) {
+  console.log("rendering!!")
+  let tbody = document.querySelector("tbody");
+    let loader = document.querySelector(".loader")
+    loader.style.visibility = 'hidden'
+    data.forEach(stock => {
+      let row = `<tr>
+        <th>${stock.symbol}</th>
+        <td>${stock.sector}</td>
+        <td>${stock.LDCP}</td>
+        <td>${stock.open}</td>
+        <td>${stock.high}</td>
+        <th>${stock.low}</th>
+        <th>${stock.current}</th>
+        <td>${stock.change}</td>
+        <td>${stock.change_percent}</td>
+        <td>${stock.volume}</td>
+        <th style="color:
+          ${stock.signal == 'BUY' ? 'green' :
+          stock.signal == 'SELL' ? 'red' : 'black'}">${stock.signal}
+        </th>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+}
+
+function topGainers() {
+  let loader = document.querySelector(".loader")
+  let tbody = document.querySelector("tbody");
+  tbody.innerHTML = ""
+  loader.style.visibility = 'visible'
+  fetch("http://127.0.0.1:5000/api/top-gainers")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log({gainer: data})
+      renderingData(data)
+    });
+}
+
+function topLosers() {
+  let loader = document.querySelector(".loader")
+  let tbody = document.querySelector("tbody");
+  tbody.innerHTML = ""
+  loader.style.visibility = 'visible'
+  fetch("http://127.0.0.1:5000/api/top-losers")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log({losers: data})
+      renderingData(data)
+    });
+}
+
+function signaling() {
+  let loader = document.querySelector(".loader")
+  let tbody = document.querySelector("tbody");
+  tbody.innerHTML = ""
+  loader.style.visibility = 'visible'
+  fetch("http://127.0.0.1:5000/api/signals")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log({signals: data})
+      renderingData(data)
+    });
+}
+
+function init() {
+  let loader = document.querySelector(".loader")
+  let tbody = document.querySelector("tbody");
+  tbody.innerHTML = ""
+  loader.style.visibility = 'visible'
+  fetch("http://127.0.0.1:5000/api/psx")
+  .then(res => res.json())
+  .then(data => {
+    console.log("data",{data})
+    renderingData(data)
+  });
+}
+
+
+const allButton = document.querySelector(".all")
+const topGainersButton = document.querySelector(".top-gainers")
+const topLosersButton = document.querySelector(".top-losers")
+const signalButton = document.querySelector(".signal")
+
+// // events listners
+allButton.addEventListener("click", init)
+topGainersButton.addEventListener("click", topGainers)
+topLosersButton.addEventListener("click", topLosers)
+signalButton.addEventListener("click", signaling)
+
+
+init();
+</script>
+
+</body>
+</html>
